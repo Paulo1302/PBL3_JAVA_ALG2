@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 /**
@@ -34,27 +33,27 @@ public class ConfirmarLoginView {
         layout.setStyle("-fx-padding: 20;");
 
         // Mensagem inicial para identificação
-        Label tituloLabel = new Label("Confirmação de Login");
+        Label tituloLabel = new Label(TranslationManager.getInstance().get("login.confirmation"));
         tituloLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
 
         // Campos para CPF e senha
-        Label cpfLabel = new Label("Digite seu CPF:");
+        Label cpfLabel = new Label(TranslationManager.getInstance().get("enter.cpf"));
         TextField cpfField = new TextField();
-        cpfField.setPromptText("CPF");
+        cpfField.setPromptText(TranslationManager.getInstance().get("cpf"));
 
-        Label senhaLabel = new Label("Digite sua senha:");
+        Label senhaLabel = new Label(TranslationManager.getInstance().get("enter.password"));
         PasswordField senhaField = new PasswordField();
-        senhaField.setPromptText("Senha");
+        senhaField.setPromptText(TranslationManager.getInstance().get("password"));
 
         // Botões de confirmar e cancelar
-        Button confirmarButton = new Button("Confirmar");
-        Button cancelarButton = new Button("Cancelar");
+        Button confirmarButton = new Button(TranslationManager.getInstance().get("confirm"));
+        Button cancelarButton = new Button(TranslationManager.getInstance().get("cancel"));
 
         confirmarButton.setOnAction(event -> {
             try {
                 confirmarLogin(cpfField.getText().trim(), senhaField.getText());
             } catch (IOException e) {
-                showAlert("Erro", "Erro ao acessar o armazenamento. Tente novamente.");
+                showAlert(TranslationManager.getInstance().get("error"), TranslationManager.getInstance().get("error.accessing.storage"));
             }
         });
         cancelarButton.setOnAction(event -> new AppScreenView(stage, usuario, controller, armazenamento).show());
@@ -63,25 +62,22 @@ public class ConfirmarLoginView {
                 tituloLabel, cpfLabel, cpfField, senhaLabel, senhaField, confirmarButton, cancelarButton
         );
 
-        Scene scene = new Scene(layout, 400, 300);
+        Scene scene = new Scene(layout, 600, 600);
         stage.setScene(scene);
-        stage.setTitle("Confirmação de Login");
+        stage.setTitle(TranslationManager.getInstance().get("login.confirmation"));
         stage.show();
     }
 
     private void confirmarLogin(String cpf, String senha) throws IOException {
-        // Valida se os campos não estão vazios
         if (cpf.isEmpty() || senha.isEmpty()) {
-            showAlert("Erro", "CPF e senha são obrigatórios!");
+            showAlert(TranslationManager.getInstance().get("error"), TranslationManager.getInstance().get("error.empty.fields"));
             return;
         }
 
-        // Usa o método loginUsuario do Controller para validar as credenciais
         if (controller.loginUsuario(cpf, senha, armazenamento)) {
-            // Redireciona para a tela de atualização de dados
             new AtualizarDadosView(stage, usuario, controller, armazenamento).show();
         } else {
-            showAlert("Erro", "CPF ou senha incorretos!");
+            showAlert(TranslationManager.getInstance().get("error"), TranslationManager.getInstance().get("error.invalid.credentials"));
         }
     }
 

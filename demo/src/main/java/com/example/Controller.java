@@ -22,11 +22,12 @@ public class Controller {
      * @param ativo indica se o usuário está ativo
      * @return o objeto {@code Usuario} criado
      */
-    public void cadastrarUsuario(String username, String senha, String nome, String cpf, String email, boolean ativo, Armazenamento dados) {
+    public Usuario cadastrarUsuario(String username, String senha, String nome, String cpf, String email, boolean ativo, Armazenamento dados) {
         Usuario user = new Usuario( username,  senha,  nome,  cpf,  email, ativo);
         if (dados.LerArquivoUsuario(user.getCpf()) == null) {
             dados.ArmazenamentoUser(user);
             System.out.println("Usuário armazenado com sucesso!");
+            return user;
         } else {
             throw new IllegalArgumentException("Erro: Usuário com CPF " + user.getCpf() + " já existe.");
         }
@@ -54,6 +55,16 @@ public class Controller {
         }
     }
 
+    public Evento cadastrarEvento(Usuario admin, String nome, String descricao, Date data, int ingressos, double preco,Armazenamento dados) {
+        if (admin.isAdmin()) {
+            Evento evento = new Evento(nome, descricao, data, ingressos, preco);
+            dados.ArmazenarEvento(evento);
+            return evento;
+        } else {
+            throw new SecurityException("Somente administradores podem cadastrar eventos.");
+        }
+    }
+
     /**
      * Compra um ingresso para um usuário.
      *
@@ -66,7 +77,7 @@ public class Controller {
      */
     public Ingresso comprarIngresso(Usuario usuario, String eventoID, Armazenamento dados, String pagamento, Date data) {
         Evento EventoAtual = dados.LerArquivoEvento(eventoID);
-        Ingresso ingresso = new Ingresso(EventoAtual);
+        Ingresso ingresso = new Ingresso(EventoAtual, EventoAtual.getPreco());
         Recibo recibo = new Recibo(usuario.getNome(), usuario.getCpf(), usuario.getEmail(), ingresso, pagamento, eventoID, data);
 
         EventoAtual.setIngressos(EventoAtual.getIngressos() - 1);
@@ -179,10 +190,12 @@ public class Controller {
      * @param avaliacao o texto da avaliação
      * @throws SecurityException se o usuário não participou do evento
      */
-    public void avaliarEvento(Evento evento, Usuario usuario, String avaliacao) {
+    public void avaliarEvento(Evento evento, Usuario usuario, String avaliacao, Armazenamento dados) {
         // Verifica se o usuário possui um ingresso para o evento
+       
         if (usuario.getIngressos().stream().anyMatch(ingresso -> ingresso.getEventoID().equals(evento.getID()))) {
             evento.adicionarAvaliacao(usuario.getLogin(), avaliacao);
+            dados.ArmazenarEvento(evento);
         } else {
             throw new SecurityException("Apenas usuários que participaram do evento podem avaliar.");
         }

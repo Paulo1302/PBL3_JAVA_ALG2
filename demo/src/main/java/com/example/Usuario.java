@@ -188,7 +188,7 @@ public class Usuario {
      * @return {@code true} se o ingresso foi removido, {@code false} caso contrário
      */
     public boolean removeIngresso(Ingresso ingresso, Evento evento, Date dataAtual) {
-        if (evento.getData().before(dataAtual)) {
+        if (evento.getData().after(dataAtual)) {
             Ingressos.remove(ingresso);
             ingresso = null; // Excluir o objeto ingresso
             return true;

@@ -20,6 +20,7 @@ public class Evento {
     private Date Data;
     private int QuantidadeIngressos;
     private Map<String, String> avaliacoes;
+    private double Preco;
 
     /**
      * Construtor da classe {@code Evento}.
@@ -36,6 +37,25 @@ public class Evento {
         this.Data = ajustarData(Data);
         this.QuantidadeIngressos = ingressos;
         this.avaliacoes = new HashMap<>();
+        this.Preco = 0.0;
+    }
+
+    /**
+     * Construtor da classe {@code Evento}.
+     *
+     * @param Nome o nome do evento
+     * @param Descricao a descrição do evento
+     * @param Data a data em que o evento ocorrerá
+     * @param ingressos a quantidade de ingressos disponíveis para o evento
+     */
+    public Evento(String Nome, String Descricao, Date Data, int ingressos, double Preco) {
+        this.ID = gerarId(Data, Nome);
+        this.Nome = Nome;
+        this.Descricao = Descricao;
+        this.Data = ajustarData(Data);
+        this.QuantidadeIngressos = ingressos;
+        this.avaliacoes = new HashMap<>();
+        this.Preco = Preco;
     }
 
     /**
@@ -159,6 +179,15 @@ public class Evento {
         for (Map.Entry<String, String> usuario : avaliacoes.entrySet()) {
             System.out.println("Usuário: " + usuario.getKey() + " - Avaliação: " + usuario.getValue());
         }
+    }
+
+    public double getPreco(){
+        return this.Preco;
+    }
+
+    public void setPreco(double preco){
+        this.Preco = preco;
+        System.out.println("Preço atualizado com sucesso!");
     }
 
     /**
